@@ -1,0 +1,1 @@
+git+https://github.com/mass-project/mass_api_client.git

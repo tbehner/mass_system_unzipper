@@ -67,7 +67,7 @@ if __name__ == "__main__"   :
     mass_api_client.ConnectionManager().register_connection('default', api_key, server_addr, timeout=timeout)
 
     analysis_system_instance = get_or_create_analysis_system_instance(identifier='unzip',
-                                                                      verbose_name= 'unzip - Unpacking of ZIP Archives with a password list.',
+                                                                      verbose_name= 'Unzipper',
                                                                       tag_filter_exp='sample-type:filesample and mime-type:zip',
                                                                       )
     unzipper = UnzipperAnalysis()
