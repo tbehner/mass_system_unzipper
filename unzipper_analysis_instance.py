@@ -49,7 +49,7 @@ class UnzipperAnalysis():
             for fn in files:
                 logger.info('Submitting {}'.format(fn))
                 with zp.open(fn, "r", pwd=pw.encode('utf-8')) as zo:
-                    mass.FileSample.create(fn, zo)
+                    mass.create_with_file(fn, zo)
                 logger.info('Submission finished!')
             scheduled_analysis.create_report(
                     additional_metadata={'status': 'unpacked'},
@@ -63,12 +63,12 @@ if __name__ == "__main__"   :
     logger.info('Got API KEY {}'.format(api_key))
     server_addr = os.getenv('MASS_SERVER', 'http://localhost:8000/api/')
     logger.info('Connecting to {}'.format(server_addr))
-    timeout = int(os.getenv('MASS_TIMEOUT', '60'))
+    timeout = int(os.getenv('MASS_TIMEOUT', '120'))
     mass_api_client.ConnectionManager().register_connection('default', api_key, server_addr, timeout=timeout)
 
     analysis_system_instance = get_or_create_analysis_system_instance(identifier='unzip',
                                                                       verbose_name= 'Unzipper',
-                                                                      tag_filter_exp='sample-type:filesample and mime-type:zip',
+                                                                      tag_filter_exp='sample-type:filesample and extension:zip',
                                                                       )
     unzipper = UnzipperAnalysis()
     process_analyses(analysis_system_instance, unzipper.unzip, sleep_time=7)
