@@ -2,14 +2,14 @@ import logging
 import tempfile
 import mass_api_client
 import zipfile
+import os
 from mass_api_client import resources as mass
 from mass_api_client.utils import process_analyses, get_or_create_analysis_system_instance
 
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
+logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-logger.addHandler(ch)
+# TODO nicer logging format
 
 
 def read_password_list():
@@ -59,7 +59,12 @@ class UnzipperAnalysis():
                     )
 
 if __name__ == "__main__"   :
-    mass_api_client.ConnectionManager().register_connection('default', 'IjU5ZDM3Yzc0NmFlY2RmN2MzNGIzYjAyMiI.WhU92Ly9Tq4fc63l0qKfl944Jj4', 'http://localhost:8000/api/', timeout=60)
+    api_key = os.getenv('MASS_API_KEY', '')
+    logger.info('Got API KEY {}'.format(api_key))
+    server_addr = os.getenv('MASS_SERVER', 'http://localhost:8000/api/')
+    logger.info('Connecting to {}'.format(server_addr))
+    timeout = int(os.getenv('MASS_TIMEOUT', '60'))
+    mass_api_client.ConnectionManager().register_connection('default', api_key, server_addr, timeout=timeout)
 
     analysis_system_instance = get_or_create_analysis_system_instance(identifier='unzip',
                                                                       verbose_name= 'unzip - Unpacking of ZIP Archives with a password list.',
