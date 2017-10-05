@@ -26,7 +26,12 @@ class UnzipperAnalysis():
         sample = scheduled_analysis.get_sample()
         logger.info('Analysing {}'.format(sample))
         with sample.temporary_file() as sample_file:
-            zp = zipfile.ZipFile(sample_file)
+            try:
+                zp = zipfile.ZipFile(sample_file)
+            except zipfile.BadZipfile:
+                scheduled_analysis.create_report(additional_metadata={'status': 'BadZipfile'})
+                return
+
             files = zp.namelist() 
             logger.info('Contains files: {}'.format(files))
             password = None
@@ -49,7 +54,7 @@ class UnzipperAnalysis():
             for fn in files:
                 logger.info('Submitting {}'.format(fn))
                 with zp.open(fn, "r", pwd=pw.encode('utf-8')) as zo:
-                    mass.create_with_file(fn, zo)
+                    mass.Sample.create_with_file(fn, zo)
                 logger.info('Submission finished!')
             scheduled_analysis.create_report(
                     additional_metadata={'status': 'unpacked'},
